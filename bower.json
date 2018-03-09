@@ -1,0 +1,17 @@
+{
+  "name": "ndx-suggestions",
+  "description": "autocomplete suggestions for ndx-framework apps",
+  "main": ["build/index.js", "build/index.css"],
+  "authors": [
+    "ndxbxrme"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ndxbxrme/ndx-suggestions",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
