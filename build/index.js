@@ -18,7 +18,7 @@
         suggestions: '='
       },
       link: function(scope, elem, attrs, ctrl) {
-        var field, holder, lastVal, mysuggestions, options, sizer, suggestions, suggestor;
+        var deref, field, holder, inputBorderLeft, inputBorderTop, inputFontFamily, inputFontSize, inputFontWeight, inputHeight, inputPaddingLeft, inputPaddingTop, lastVal, mysuggestions, options, sizer, suggestions, suggestor, suggestorMarginTop;
         holder = elem.wrap('<div class="suggestions-holder"></div>');
         sizer = $('<div class="sizer"></div>');
         sizer.insertBefore(elem);
@@ -31,7 +31,30 @@
         lastVal = elem.val();
         mysuggestions = [];
         field = attrs.field || 'name';
-        scope.$watch('suggestions', function(n, o) {
+        inputHeight = elem.height();
+        inputBorderTop = parseInt(elem.css('border-top-width'));
+        inputBorderLeft = parseInt(elem.css('border-left-width'));
+        inputPaddingTop = parseInt(elem.css('padding-top'));
+        inputPaddingLeft = parseInt(elem.css('padding-left'));
+        inputFontFamily = elem.css('font-family');
+        inputFontSize = elem.css('font-size');
+        inputFontWeight = elem.css('font-weight');
+        suggestorMarginTop = parseInt(suggestor.css('margin-top'));
+        suggestor.css({
+          height: (inputHeight - (2 * suggestorMarginTop)) + 'px',
+          lineHeight: (inputHeight - (2 * suggestorMarginTop)) + 'px',
+          marginLeft: (inputPaddingLeft + inputBorderLeft) + 'px',
+          marginTop: (suggestorMarginTop + inputBorderTop) + 'px',
+          fontFamily: inputFontFamily,
+          fontSize: inputFontSize,
+          fontWeight: inputFontWeight
+        });
+        sizer.css({
+          fontFamily: inputFontFamily,
+          fontSize: inputFontSize,
+          fontWeight: inputFontWeight
+        });
+        deref = scope.$watch('suggestions', function(n, o) {
           var item, j, len;
           if (n) {
             for (j = 0, len = n.length; j < len; j++) {
@@ -44,6 +67,9 @@
           } else {
             return mysuggestions = [];
           }
+        });
+        scope.$on('$destroy', function() {
+          return deref();
         });
         suggestions.bind('mousedown', function(e) {
           $('li.selected', suggestions).removeClass('selected');

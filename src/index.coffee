@@ -21,7 +21,28 @@ module.directive 'suggestions', ->
     lastVal = elem.val()
     mysuggestions = []
     field = attrs.field or 'name'
-    scope.$watch 'suggestions', (n, o) ->
+    inputHeight = elem.height()
+    inputBorderTop = parseInt elem.css('border-top-width')
+    inputBorderLeft = parseInt elem.css('border-left-width')
+    inputPaddingTop = parseInt elem.css('padding-top')
+    inputPaddingLeft = parseInt elem.css('padding-left')
+    inputFontFamily = elem.css('font-family')
+    inputFontSize = elem.css('font-size')
+    inputFontWeight = elem.css('font-weight')
+    suggestorMarginTop = parseInt suggestor.css('margin-top')
+    suggestor.css
+      height: (inputHeight - (2 * suggestorMarginTop)) + 'px'
+      lineHeight: (inputHeight - (2 * suggestorMarginTop)) + 'px'
+      marginLeft: (inputPaddingLeft + inputBorderLeft) + 'px'
+      marginTop: (suggestorMarginTop + inputBorderTop) + 'px'
+      fontFamily: inputFontFamily
+      fontSize: inputFontSize
+      fontWeight: inputFontWeight
+    sizer.css
+      fontFamily: inputFontFamily
+      fontSize: inputFontSize
+      fontWeight: inputFontWeight
+    deref = scope.$watch 'suggestions', (n, o) ->
       if n
         for item in n
           if mysuggestions.indexOf(item[field]) is -1
@@ -29,6 +50,8 @@ module.directive 'suggestions', ->
         mysuggestions.sort()
       else
         mysuggestions = []
+    scope.$on '$destroy', ->
+      deref()
     suggestions.bind 'mousedown', (e) ->
       $('li.selected', suggestions).removeClass 'selected'
       elem.val $(e.target).text()
