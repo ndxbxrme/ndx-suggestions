@@ -44,6 +44,7 @@ module.directive 'suggestions', ->
       fontWeight: inputFontWeight
     deref = scope.$watch 'suggestions', (n, o) ->
       if n
+        mysuggestions = []
         for item in n
           if mysuggestions.indexOf(item[field]) is -1
             mysuggestions.push item[field]

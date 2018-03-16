@@ -57,6 +57,7 @@
         deref = scope.$watch('suggestions', function(n, o) {
           var item, j, len;
           if (n) {
+            mysuggestions = [];
             for (j = 0, len = n.length; j < len; j++) {
               item = n[j];
               if (mysuggestions.indexOf(item[field]) === -1) {
