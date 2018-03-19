@@ -6,6 +6,7 @@ catch e
   module = angular.module 'ndx', []
 module.directive 'suggestions', ->
   restrict: 'A'
+  require: 'ngModel'
   scope:
     suggestions: '='
   link: (scope, elem, attrs, ctrl) ->
@@ -57,8 +58,10 @@ module.directive 'suggestions', ->
       $('li.selected', suggestions).removeClass 'selected'
       elem.val $(e.target).text()
     elem.bind 'blur', ->
+      console.log ctrl
       if selectedText = $('li.selected', suggestions).text()
         elem.val selectedText
+        ctrl.$setViewValue selectedText
       options.html ''
       suggestor.text ''
       suggestions.addClass 'hidden'
