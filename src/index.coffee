@@ -58,7 +58,6 @@ module.directive 'suggestions', ->
       $('li.selected', suggestions).removeClass 'selected'
       elem.val $(e.target).text()
     elem.bind 'blur', ->
-      console.log ctrl
       if selectedText = $('li.selected', suggestions).text()
         elem.val selectedText
         ctrl.$setViewValue selectedText

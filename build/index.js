@@ -79,7 +79,6 @@
         });
         elem.bind('blur', function() {
           var selectedText;
-          console.log(ctrl);
           if (selectedText = $('li.selected', suggestions).text()) {
             elem.val(selectedText);
             ctrl.$setViewValue(selectedText);
