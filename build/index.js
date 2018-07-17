@@ -61,7 +61,7 @@
           var i, j, len, li, r, thing;
           i = 0;
           options.html('');
-          if (elem.val()) {
+          if (elem.val() && elem.is(':focus')) {
             for (j = 0, len = mysuggestions.length; j < len; j++) {
               thing = mysuggestions[j];
               r = RegExp('.*' + elem.val() + '.*', 'i');

@@ -48,7 +48,7 @@ module.directive 'suggestions', ->
     render = (isServer) ->
       i = 0
       options.html('')
-      if elem.val()
+      if elem.val() and elem.is ':focus'
         for thing in mysuggestions
           r = RegExp '.*' + elem.val() + '.*', 'i'
           if isServer or r.test thing
