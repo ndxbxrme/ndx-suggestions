@@ -71,7 +71,6 @@ module.directive 'suggestions', ->
           suggestions.addClass 'scrollY'
     doSelect = (text) ->
       if scope.select
-        console.log 'select'
         item = null
         for suggestion in scope.suggestions
           if suggestion[field] is text
@@ -156,7 +155,6 @@ module.directive 'suggestions', ->
           true
         else
           if valChanged and not attrs.server
-            console.log 'rendering'
             render()
       if e.keyCode is 8
         suggestor.text ''

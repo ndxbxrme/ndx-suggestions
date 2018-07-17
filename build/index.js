@@ -94,7 +94,6 @@
         doSelect = function(text) {
           var item, j, len, ref, suggestion;
           if (scope.select) {
-            console.log('select');
             item = null;
             ref = scope.suggestions;
             for (j = 0, len = ref.length; j < len; j++) {
@@ -215,7 +214,6 @@
               break;
             default:
               if (valChanged && !attrs.server) {
-                console.log('rendering');
                 render();
               }
           }
