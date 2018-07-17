@@ -137,6 +137,12 @@ module.directive 'suggestions', ->
               $(li).addClass 'selected'
               elem.val $(li).text()
               suggestor.text ''
+        when 13
+          if selectedText = $('li.selected', suggestions).text()
+            doSelect selectedText
+          e.preventDefault()
+          e.stopPropagation()
+          e.cancelBubble = true
         when 8
           if suggestor.text()
             suggestor.text ''

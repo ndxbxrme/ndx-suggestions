@@ -147,7 +147,7 @@
           return suggestions.addClass('hidden');
         });
         elem.bind('keydown', function(e) {
-          var li, next, prev, selected;
+          var li, next, prev, selected, selectedText;
           switch (e.keyCode) {
             case 38:
               //key up
@@ -188,6 +188,13 @@
                 }
               }
               break;
+            case 13:
+              if (selectedText = $('li.selected', suggestions).text()) {
+                doSelect(selectedText);
+              }
+              e.preventDefault();
+              e.stopPropagation();
+              return e.cancelBubble = true;
             case 8:
               if (suggestor.text()) {
                 suggestor.text('');

@@ -1,6 +1,6 @@
 {
   "name": "ndx-suggestions",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "autocomplete suggestions for ndx-framework apps",
   "main": "build/index.js",
   "scripts": {
