@@ -45,13 +45,13 @@ module.directive 'suggestions', ->
       fontFamily: inputFontFamily
       fontSize: inputFontSize
       fontWeight: inputFontWeight
-    render = ->
+    render = (isServer) ->
       i = 0
       options.html('')
       if elem.val()
         for thing in mysuggestions
           r = RegExp '.*' + elem.val() + '.*', 'i'
-          if r.test thing
+          if isServer or r.test thing
             r = RegExp '^' + elem.val(), 'i'
             li = $ '<li>' + thing + '</li>'
             options.append li
@@ -92,7 +92,7 @@ module.directive 'suggestions', ->
             mysuggestions.push item[field]
         mysuggestions.sort()
         if n isnt o
-          render()
+          render true
       else
         mysuggestions = []
     scope.$on '$destroy', ->

@@ -57,7 +57,7 @@
           fontSize: inputFontSize,
           fontWeight: inputFontWeight
         });
-        render = function() {
+        render = function(isServer) {
           var i, j, len, li, r, thing;
           i = 0;
           options.html('');
@@ -65,7 +65,7 @@
             for (j = 0, len = mysuggestions.length; j < len; j++) {
               thing = mysuggestions[j];
               r = RegExp('.*' + elem.val() + '.*', 'i');
-              if (r.test(thing)) {
+              if (isServer || r.test(thing)) {
                 r = RegExp('^' + elem.val(), 'i');
                 li = $('<li>' + thing + '</li>');
                 options.append(li);
@@ -125,7 +125,7 @@
             }
             mysuggestions.sort();
             if (n !== o) {
-              return render();
+              return render(true);
             }
           } else {
             return mysuggestions = [];
