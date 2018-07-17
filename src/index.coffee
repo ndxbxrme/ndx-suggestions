@@ -9,7 +9,9 @@ module.directive 'suggestions', ->
   require: 'ngModel'
   scope:
     suggestions: '='
+    select: '='
   link: (scope, elem, attrs, ctrl) ->
+    elem[0].setAttribute 'autocomplete', 'nope'
     holder = elem.wrap '<div class="suggestions-holder"></div>'
     sizer = $('<div class="sizer"></div>')
     sizer.insertBefore elem
@@ -43,6 +45,45 @@ module.directive 'suggestions', ->
       fontFamily: inputFontFamily
       fontSize: inputFontSize
       fontWeight: inputFontWeight
+    render = ->
+      i = 0
+      options.html('')
+      if elem.val()
+        for thing in mysuggestions
+          r = RegExp '.*' + elem.val() + '.*', 'i'
+          if r.test thing
+            r = RegExp '^' + elem.val(), 'i'
+            li = $ '<li>' + thing + '</li>'
+            options.append li
+            if i++ is 0
+              if r.test thing
+                suggestor.text thing.substr elem.val().length
+                li.addClass 'selected'
+              else
+                suggestor.text ''
+        if i is 0
+          suggestor.text ''
+          suggestions.addClass 'hidden'
+        else
+          suggestions.removeClass 'hidden'
+        suggestions.removeClass 'scrollY'
+        if options.height() > suggestions.height()
+          suggestions.addClass 'scrollY'
+    doSelect = (text) ->
+      if scope.select
+        console.log 'select'
+        item = null
+        for suggestion in scope.suggestions
+          if suggestion[field] is text
+            item = suggestion
+            break
+        scope.select item
+      else
+        elem.val text
+        ctrl.$setViewValue text
+      options.html ''
+      suggestor.text ''
+      suggestions.addClass 'hidden'
     deref = scope.$watch 'suggestions', (n, o) ->
       if n
         mysuggestions = []
@@ -50,17 +91,18 @@ module.directive 'suggestions', ->
           if mysuggestions.indexOf(item[field]) is -1
             mysuggestions.push item[field]
         mysuggestions.sort()
+        if n isnt o
+          render()
       else
         mysuggestions = []
     scope.$on '$destroy', ->
       deref()
     suggestions.bind 'mousedown', (e) ->
       $('li.selected', suggestions).removeClass 'selected'
-      elem.val $(e.target).text()
+      doSelect $(e.target).text()
     elem.bind 'blur', ->
       if selectedText = $('li.selected', suggestions).text()
-        elem.val selectedText
-        ctrl.$setViewValue selectedText
+        doSelect selectedText
       options.html ''
       suggestor.text ''
       suggestions.addClass 'hidden'
@@ -113,30 +155,9 @@ module.directive 'suggestions', ->
         when 38, 40
           true
         else
-          i = 0
-          if valChanged
-            options.html('')
-            if elem.val()
-              for thing in mysuggestions
-                r = RegExp '.*' + elem.val() + '.*', 'i'
-                if r.test thing
-                  r = RegExp '^' + elem.val(), 'i'
-                  li = $ '<li>' + thing + '</li>'
-                  options.append li
-                  if i++ is 0
-                    if r.test thing
-                      suggestor.text thing.substr elem.val().length
-                      li.addClass 'selected'
-                    else
-                      suggestor.text ''
-            if i is 0
-              suggestor.text ''
-              suggestions.addClass 'hidden'
-            else
-              suggestions.removeClass 'hidden'
-            suggestions.removeClass 'scrollY'
-            if options.height() > suggestions.height()
-              suggestions.addClass 'scrollY'
+          if valChanged and not attrs.server
+            console.log 'rendering'
+            render()
       if e.keyCode is 8
         suggestor.text ''
         $('li.selected', suggestions).removeClass 'selected'

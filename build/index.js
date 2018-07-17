@@ -16,10 +16,12 @@
       restrict: 'A',
       require: 'ngModel',
       scope: {
-        suggestions: '='
+        suggestions: '=',
+        select: '='
       },
       link: function(scope, elem, attrs, ctrl) {
-        var deref, field, holder, inputBorderLeft, inputBorderTop, inputFontFamily, inputFontSize, inputFontWeight, inputHeight, inputPaddingLeft, inputPaddingTop, lastVal, mysuggestions, options, sizer, suggestions, suggestor, suggestorMarginTop;
+        var deref, doSelect, field, holder, inputBorderLeft, inputBorderTop, inputFontFamily, inputFontSize, inputFontWeight, inputHeight, inputPaddingLeft, inputPaddingTop, lastVal, mysuggestions, options, render, sizer, suggestions, suggestor, suggestorMarginTop;
+        elem[0].setAttribute('autocomplete', 'nope');
         holder = elem.wrap('<div class="suggestions-holder"></div>');
         sizer = $('<div class="sizer"></div>');
         sizer.insertBefore(elem);
@@ -55,6 +57,62 @@
           fontSize: inputFontSize,
           fontWeight: inputFontWeight
         });
+        render = function() {
+          var i, j, len, li, r, thing;
+          i = 0;
+          options.html('');
+          if (elem.val()) {
+            for (j = 0, len = mysuggestions.length; j < len; j++) {
+              thing = mysuggestions[j];
+              r = RegExp('.*' + elem.val() + '.*', 'i');
+              if (r.test(thing)) {
+                r = RegExp('^' + elem.val(), 'i');
+                li = $('<li>' + thing + '</li>');
+                options.append(li);
+                if (i++ === 0) {
+                  if (r.test(thing)) {
+                    suggestor.text(thing.substr(elem.val().length));
+                    li.addClass('selected');
+                  } else {
+                    suggestor.text('');
+                  }
+                }
+              }
+            }
+            if (i === 0) {
+              suggestor.text('');
+              suggestions.addClass('hidden');
+            } else {
+              suggestions.removeClass('hidden');
+            }
+            suggestions.removeClass('scrollY');
+            if (options.height() > suggestions.height()) {
+              return suggestions.addClass('scrollY');
+            }
+          }
+        };
+        doSelect = function(text) {
+          var item, j, len, ref, suggestion;
+          if (scope.select) {
+            console.log('select');
+            item = null;
+            ref = scope.suggestions;
+            for (j = 0, len = ref.length; j < len; j++) {
+              suggestion = ref[j];
+              if (suggestion[field] === text) {
+                item = suggestion;
+                break;
+              }
+            }
+            scope.select(item);
+          } else {
+            elem.val(text);
+            ctrl.$setViewValue(text);
+          }
+          options.html('');
+          suggestor.text('');
+          return suggestions.addClass('hidden');
+        };
         deref = scope.$watch('suggestions', function(n, o) {
           var item, j, len;
           if (n) {
@@ -65,7 +123,10 @@
                 mysuggestions.push(item[field]);
               }
             }
-            return mysuggestions.sort();
+            mysuggestions.sort();
+            if (n !== o) {
+              return render();
+            }
           } else {
             return mysuggestions = [];
           }
@@ -75,13 +136,12 @@
         });
         suggestions.bind('mousedown', function(e) {
           $('li.selected', suggestions).removeClass('selected');
-          return elem.val($(e.target).text());
+          return doSelect($(e.target).text());
         });
         elem.bind('blur', function() {
           var selectedText;
           if (selectedText = $('li.selected', suggestions).text()) {
-            elem.val(selectedText);
-            ctrl.$setViewValue(selectedText);
+            doSelect(selectedText);
           }
           options.html('');
           suggestor.text('');
@@ -139,7 +199,7 @@
           }
         });
         return elem.bind('keyup', function(e) {
-          var i, j, len, li, r, thing, valChanged;
+          var valChanged;
           if (elem.val() !== lastVal) {
             lastVal = elem.val();
             valChanged = true;
@@ -154,38 +214,9 @@
               true;
               break;
             default:
-              i = 0;
-              if (valChanged) {
-                options.html('');
-                if (elem.val()) {
-                  for (j = 0, len = mysuggestions.length; j < len; j++) {
-                    thing = mysuggestions[j];
-                    r = RegExp('.*' + elem.val() + '.*', 'i');
-                    if (r.test(thing)) {
-                      r = RegExp('^' + elem.val(), 'i');
-                      li = $('<li>' + thing + '</li>');
-                      options.append(li);
-                      if (i++ === 0) {
-                        if (r.test(thing)) {
-                          suggestor.text(thing.substr(elem.val().length));
-                          li.addClass('selected');
-                        } else {
-                          suggestor.text('');
-                        }
-                      }
-                    }
-                  }
-                }
-                if (i === 0) {
-                  suggestor.text('');
-                  suggestions.addClass('hidden');
-                } else {
-                  suggestions.removeClass('hidden');
-                }
-                suggestions.removeClass('scrollY');
-                if (options.height() > suggestions.height()) {
-                  suggestions.addClass('scrollY');
-                }
+              if (valChanged && !attrs.server) {
+                console.log('rendering');
+                render();
               }
           }
           if (e.keyCode === 8) {
